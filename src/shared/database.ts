@@ -29,9 +29,5 @@ declare module 'knex/types/tables' {
 
   interface Tables {
     transactions: Transaction;
-    transactions_composite: Knex.CompositeTableType<
-      Transaction,
-      Omit<Transaction, 'created_at'>
-    >;
   }
 }

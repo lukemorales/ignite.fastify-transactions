@@ -28,7 +28,8 @@
     "noUnusedParameters": false,
     "preserveWatchOutput": true,
     "strict": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "types": ["vitest/globals"]
   },
   "exclude": [
     "node_modules"
