@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "doppler run -- tsx watch src/server.ts",
     "build": "tsup src",
     "knex": "node --no-warnings --loader tsx ./node_modules/knex/bin/cli.js",
     "start": "node dist/server.js"
