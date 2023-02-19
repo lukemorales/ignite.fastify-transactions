@@ -53,10 +53,12 @@ export async function transactionsRoutes(app: FastifyInstance) {
       return pipe(
         record,
         O.fromNullable,
-        O.map(flow(TransactionAdapter.toDomain, TransactionAdapter.toJSON)),
+        O.map(TransactionAdapter.toDomain),
         O.match(
           () => reply.status(404).send(),
-          (transaction) => ({ transaction }),
+          (transaction) => ({
+            transaction: TransactionAdapter.toJSON(transaction),
+          }),
         ),
       );
     },
@@ -113,11 +115,14 @@ export async function transactionsRoutes(app: FastifyInstance) {
     return pipe(
       record,
       O.fromNullable,
-      O.map(flow(TransactionAdapter.toDomain, TransactionAdapter.toJSON)),
+      O.map(TransactionAdapter.toDomain),
       O.match(
         () =>
           reply.status(422).send({ message: 'Failed to create transaction' }),
-        (transaction) => reply.status(201).send({ transaction }),
+        (transaction) =>
+          reply
+            .status(201)
+            .send({ transaction: TransactionAdapter.toJSON(transaction) }),
       ),
     );
   });
