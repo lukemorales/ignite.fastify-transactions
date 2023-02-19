@@ -4,14 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch src/server.ts"
+    "dev": "tsx watch src/server.ts",
+    "knex": "node --no-warnings --loader tsx ./node_modules/knex/bin/cli.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@fp-ts/core": "^0.2.1",
-    "fastify": "^4.13.0"
+    "dotenv": "^16.0.3",
+    "fastify": "^4.13.0",
+    "knex": "^2.4.2",
+    "sqlite3": "^5.1.4",
+    "ulid": "^2.3.0"
   },
   "devDependencies": {
     "@types/node": "^18.14.0",
