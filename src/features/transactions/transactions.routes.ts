@@ -95,19 +95,30 @@ export async function transactionsRoutes(app: FastifyInstance) {
     if (!sessionId) {
       sessionId = SessionId.parse(ulid());
 
-      await reply.cookie('session_id', sessionId, {
+      void reply.cookie('session_id', sessionId, {
         path: '/',
         maxAge: pipe(24, hoursToMilliseconds, multiply(7)), // 7 days
       });
     }
 
-    await db('transactions').insert({
-      id: ulid(),
-      title,
-      amount: type === 'CREDIT' ? amount : amount * -1,
-      session_id: unprefixId(sessionId),
-    });
+    const [record] = await db('transactions')
+      .insert({
+        id: ulid(),
+        title,
+        amount: type === 'CREDIT' ? amount : amount * -1,
+        session_id: unprefixId(sessionId),
+      })
+      .returning('*');
 
-    return reply.status(201).send();
+    return pipe(
+      record,
+      O.fromNullable,
+      O.map(flow(TransactionAdapter.toDomain, TransactionAdapter.toJSON)),
+      O.match(
+        () =>
+          reply.status(500).send({ message: 'Failed to create transaction' }),
+        (transaction) => reply.status(201).send({ transaction }),
+      ),
+    );
   });
 }
