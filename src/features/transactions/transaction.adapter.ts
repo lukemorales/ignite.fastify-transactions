@@ -13,6 +13,11 @@ export class TransactionAdapter {
   }
 
   static toJSON(domain: Transaction) {
-    return domain;
+    return {
+      id: domain.id.toString(),
+      title: domain.title,
+      amount: domain.amount,
+      createdAt: domain.createdAt.toJSON(),
+    };
   }
 }
