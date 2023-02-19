@@ -1,13 +1,18 @@
-import fastify from 'fastify';
+import fastify, { type FastifyPluginAsync } from 'fastify';
+import fastifyCookie from '@fastify/cookie';
 
 import { ENV } from './shared/env';
 import { transactionsRoutes } from './features/transactions';
 
 const app = fastify();
 
-const routes = [[transactionsRoutes, 'transactions']] as const;
+void app.register(fastifyCookie);
 
-routes.forEach(([route, prefix]) => {
+const routes: Array<[string, FastifyPluginAsync]> = [
+  ['transactions', transactionsRoutes],
+];
+
+routes.forEach(([prefix, route]) => {
   void app.register(route, { prefix });
 });
 
