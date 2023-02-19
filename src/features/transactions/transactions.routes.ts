@@ -116,7 +116,7 @@ export async function transactionsRoutes(app: FastifyInstance) {
       O.map(flow(TransactionAdapter.toDomain, TransactionAdapter.toJSON)),
       O.match(
         () =>
-          reply.status(500).send({ message: 'Failed to create transaction' }),
+          reply.status(422).send({ message: 'Failed to create transaction' }),
         (transaction) => reply.status(201).send({ transaction }),
       ),
     );
