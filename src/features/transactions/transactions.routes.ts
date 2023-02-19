@@ -12,11 +12,17 @@ import { TransactionId } from './transaction.identifier';
 import { unprefixId } from '../../shared/unprefix-id';
 import { TransactionAdapter } from './transaction.adapter';
 import { SessionId } from '../sessions/session.identifier';
+import { sessionMiddleware } from '../sessions/sessions.middleware';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function transactionsRoutes(app: FastifyInstance) {
-  app.get('/', async () => {
-    const transactions = await db('transactions').select();
+  app.get('/', { preHandler: [sessionMiddleware] }, async (request) => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const sessionId = request.cookies.session_id!;
+
+    const transactions = await db('transactions')
+      .where('session_id', unprefixId(sessionId))
+      .select();
 
     return {
       transactions: pipe(
@@ -26,8 +32,42 @@ export async function transactionsRoutes(app: FastifyInstance) {
     };
   });
 
-  app.get('/summary', async () => {
+  app.get(
+    '/:id',
+    { preHandler: [sessionMiddleware] },
+    async (request, reply) => {
+      const paramsSchema = z.object({ id: TransactionId });
+
+      const { id } = pipe(request.params, paramsSchema.parse);
+
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const sessionId = request.cookies.session_id!;
+
+      const record = await db('transactions')
+        .where({
+          id: unprefixId(id),
+          session_id: unprefixId(sessionId),
+        })
+        .first();
+
+      return pipe(
+        record,
+        O.fromNullable,
+        O.map(flow(TransactionAdapter.toDomain, TransactionAdapter.toJSON)),
+        O.match(
+          () => reply.status(404).send(),
+          (transaction) => ({ transaction }),
+        ),
+      );
+    },
+  );
+
+  app.get('/summary', { preHandler: [sessionMiddleware] }, async (request) => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const sessionId = request.cookies.session_id!;
+
     const result = await db('transactions')
+      .where('session_id', unprefixId(sessionId))
       .sum('amount', { as: 'amount' })
       .first();
 
@@ -35,26 +75,8 @@ export async function transactionsRoutes(app: FastifyInstance) {
       result,
       O.fromNullable,
       O.match(
-        () => 0,
-        ({ amount: summary }) => ({ summary }),
-      ),
-    );
-  });
-
-  app.get('/:id', async (request, reply) => {
-    const paramsSchema = z.object({ id: TransactionId });
-
-    const { id } = pipe(request.params, paramsSchema.parse);
-
-    const record = await db('transactions').where('id', unprefixId(id)).first();
-
-    return pipe(
-      record,
-      O.fromNullable,
-      O.map(flow(TransactionAdapter.toDomain, TransactionAdapter.toJSON)),
-      O.match(
-        () => reply.status(404).send(),
-        (transaction) => ({ transaction }),
+        () => ({ summary: { amount: 0 } }),
+        (summary) => ({ summary }),
       ),
     );
   });
