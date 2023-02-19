@@ -1,6 +1,6 @@
 import fastify from 'fastify';
 
-import { ENV } from './config/env';
+import { ENV } from './shared/env';
 import { transactionsRoutes } from './features/transactions';
 
 const app = fastify();

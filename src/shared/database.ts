@@ -1,11 +1,7 @@
 import 'dotenv/config';
 import knex, { type Knex } from 'knex';
 
-import { ENV } from '../config/env';
-
-if (!process.env.DATABASE_URL) {
-  throw new Error('Missing database url environment variable');
-}
+import { ENV } from './env';
 
 export const knexConfig = {
   client: ENV.DATABASE_CLIENT,
@@ -15,7 +11,7 @@ export const knexConfig = {
   },
   migrations: {
     extension: 'ts',
-    directory: './src/db/migrations',
+    directory: './src/migrations',
   },
 } as const satisfies Knex.Config;
 
