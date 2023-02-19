@@ -1,23 +1,14 @@
 import fastify from 'fastify';
 
-import { ulid } from 'ulid';
-
 import { ENV } from './config/env';
-import { db } from './db/database-config';
+import { transactionsRoutes } from './features/transactions';
 
 const app = fastify();
 
-app.get('/health', async () => {
-  const data = await db('transactions')
-    .insert({
-      id: ulid(),
-      title: 'Test transaction',
-      amount: 1000,
-      session_id: ulid(),
-    })
-    .returning('*');
+const routes = [[transactionsRoutes, 'transactions']] as const;
 
-  return { data };
+routes.forEach(([route, prefix]) => {
+  void app.register(route, { prefix });
 });
 
 void app
