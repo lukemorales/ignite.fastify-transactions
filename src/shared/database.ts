@@ -6,9 +6,10 @@ import { ENV } from './env';
 export const knexConfig = {
   client: ENV.DATABASE_CLIENT,
   useNullAsDefault: true,
-  connection: {
-    filename: ENV.DATABASE_URL,
-  },
+  connection:
+    ENV.DATABASE_CLIENT === 'sqlite'
+      ? { filename: ENV.DATABASE_URL }
+      : ENV.DATABASE_URL,
   migrations: {
     extension: 'ts',
     directory: './src/migrations',
