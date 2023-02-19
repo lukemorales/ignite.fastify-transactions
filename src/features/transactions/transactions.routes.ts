@@ -3,12 +3,15 @@ import { type FastifyInstance } from 'fastify';
 import { flow, pipe } from '@fp-ts/core/Function';
 import { ulid } from 'ulid';
 import { z } from 'zod';
+import { hoursToMilliseconds } from 'date-fns/fp';
+import { multiply } from '@fp-ts/core/Number';
 
 import { db } from '../../shared/database';
 import { A, O } from '../../shared/fp-ts';
 import { TransactionId } from './transaction.identifier';
 import { unprefixId } from '../../shared/unprefix-id';
 import { TransactionAdapter } from './transaction.adapter';
+import { SessionId } from '../sessions/session.identifier';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function transactionsRoutes(app: FastifyInstance) {
@@ -56,7 +59,7 @@ export async function transactionsRoutes(app: FastifyInstance) {
     );
   });
 
-  app.post('/', async (request, response) => {
+  app.post('/', async (request, reply) => {
     const bodySchema = z.object({
       title: z.string(),
       amount: z.number(),
@@ -65,13 +68,24 @@ export async function transactionsRoutes(app: FastifyInstance) {
 
     const { title, amount, type } = pipe(request.body, bodySchema.parse);
 
+    let sessionId = request.cookies.session_id;
+
+    if (!sessionId) {
+      sessionId = SessionId.parse(ulid());
+
+      await reply.cookie('session_id', sessionId, {
+        path: '/',
+        maxAge: pipe(24, hoursToMilliseconds, multiply(7)), // 7 days
+      });
+    }
+
     await db('transactions').insert({
       id: ulid(),
       title,
       amount: type === 'CREDIT' ? amount : amount * -1,
-      session_id: ulid(),
+      session_id: unprefixId(sessionId),
     });
 
-    return response.status(201).send();
+    return reply.status(201).send();
   });
 }
