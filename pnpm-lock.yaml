@@ -33,6 +33,7 @@ specifiers:
   ulid: ^2.3.0
   vitest: ^0.28.5
   zod: ^3.20.6
+  zod-validation-error: ^0.3.1
 
 dependencies:
   '@fastify/cookie': 8.3.0
@@ -4430,6 +4431,15 @@ packages:
     resolution: {integrity: sha512-9bnSc/HEW2uRy67wc+T8UwauLuPJVn28jb+GtJY16iiKWyvmYJRXVT4UamsAEGQfPohgr2q4Tq0sQbQlxTfi1g==}
     engines: {node: '>=12.20'}
     dev: true
+
+  /zod-validation-error/0.3.1_zod@3.20.6:
+    resolution: {integrity: sha512-3m7VcE4YT3ZdGJoYBZnLt8E1S/r8zPFNDWMc2njaeC7Vxe5FQbgIiwHoerSkli5PgsUyxWQhpFxEAJXkBJvoDg==}
+    engines: {node: ^14.17 || >=16.0.0}
+    peerDependencies:
+      zod: ^3.18.0
+    dependencies:
+      zod: 3.20.6
+    dev: false
 
   /zod/3.20.6:
     resolution: {integrity: sha512-oyu0m54SGCtzh6EClBVqDDlAYRz4jrVtKwQ7ZnsEmMI9HnzuZFj8QFwAY1M5uniIYACdGvv0PBWPF2kO0aNofA==}
