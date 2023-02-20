@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import { exhaustive } from 'exhaustive';
 import knex, { type Knex } from 'knex';
 
 import { ENV } from './env';
@@ -6,10 +6,10 @@ import { ENV } from './env';
 export const knexConfig = {
   client: ENV.DATABASE_CLIENT,
   useNullAsDefault: true,
-  connection:
-    ENV.DATABASE_CLIENT === 'sqlite'
-      ? { filename: ENV.DATABASE_URL }
-      : ENV.DATABASE_URL,
+  connection: exhaustive(ENV.DATABASE_CLIENT, {
+    pg: () => ENV.DATABASE_URL,
+    sqlite: () => ({ filename: ENV.DATABASE_URL }),
+  }),
   migrations: {
     extension: 'ts',
     directory: './src/migrations',

@@ -21,6 +21,7 @@ specifiers:
   eslint-plugin-jest-formatting: ^3.1.0
   eslint-plugin-prettier: ^4.2.1
   eslint-plugin-simple-import-sort: ^10.0.0
+  exhaustive: ^1.1.1
   fastify: ^4.13.0
   knex: ^2.4.2
   pg: ^8.9.0
@@ -40,11 +41,13 @@ dependencies:
   '@fp-ts/core': 0.2.1
   date-fns: 2.29.3
   dotenv: 16.0.3
+  exhaustive: 1.1.1
   fastify: 4.13.0
   knex: 2.4.2_pg@8.9.0+sqlite3@5.1.4
   pg: 8.9.0
   ulid: 2.3.0
   zod: 3.20.6
+  zod-validation-error: 0.3.1_zod@3.20.6
 
 devDependencies:
   '@types/node': 18.14.0
@@ -1977,6 +1980,10 @@ packages:
       signal-exit: 3.0.7
       strip-final-newline: 2.0.0
     dev: true
+
+  /exhaustive/1.1.1:
+    resolution: {integrity: sha512-Fisyq6nCqwshk7GqqcalFrxxZErvNFVQLUluTXFFlMZ9rbBzboNET54mQJjHuyiFju7s6fxstpdPlDwJjPY71Q==}
+    dev: false
 
   /fast-content-type-parse/1.0.0:
     resolution: {integrity: sha512-Xbc4XcysUXcsP5aHUU7Nq3OwvHq97C+WnbkeIefpeYLX+ryzFJlU6OStFJhs6Ol0LkUGpcK+wL0JwfM+FCU5IA==}

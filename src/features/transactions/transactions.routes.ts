@@ -5,6 +5,7 @@ import { ulid } from 'ulid';
 import { z } from 'zod';
 import { hoursToMilliseconds } from 'date-fns/fp';
 import { multiply } from '@fp-ts/core/Number';
+import { exhaustive } from 'exhaustive';
 
 import { db } from '../../shared/database';
 import { A, O } from '../../shared/fp-ts';
@@ -107,7 +108,10 @@ export async function transactionsRoutes(app: FastifyInstance) {
       .insert({
         id: ulid(),
         title,
-        amount: type === 'CREDIT' ? amount : amount * -1,
+        amount: exhaustive(type, {
+          CREDIT: () => amount,
+          DEBIT: () => amount * -1,
+        }),
         session_id: unprefixId(sessionId),
       })
       .returning('*');
